@@ -5,7 +5,7 @@
 при самоукусе сбрасывается в начальное состояние.
 """
 
-from random import choice, randint
+from random import choice
 
 import pygame
 
@@ -24,13 +24,13 @@ RIGHT = (1, 0)
 # Цвет фона - черный:
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
 
-# Цвет границы ячейки
+# Цвет границы ячейки:
 BORDER_COLOR = (93, 216, 228)
 
-# Цвет яблока
+# Цвет яблока:
 APPLE_COLOR = (255, 0, 0)
 
-# Цвет змейки
+# Цвет змейки:
 SNAKE_COLOR = (0, 255, 0)
 
 # Скорость движения змейки:
@@ -48,7 +48,7 @@ clock = pygame.time.Clock()
 # Центральная точка экрана (вычисляется один раз):
 CENTER_POSITION = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
 
-# Множество всех возможных ячеек поля (для генерации позиции яблока):
+# Множество всех возможных ячеек поля:
 ALL_CELLS = set(
     (x * GRID_SIZE, y * GRID_SIZE)
     for x in range(GRID_WIDTH)
@@ -91,10 +91,7 @@ class Apple(GameObject):
         if free_cells:
             self.position = choice(tuple(free_cells))
         else:
-            self.position = (
-                randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-                randint(0, GRID_HEIGHT - 1) * GRID_SIZE,
-            )
+            self.position = CENTER_POSITION
 
     def draw(self):
         """Отрисовывает яблоко на игровом поле."""
@@ -135,14 +132,9 @@ class Snake(GameObject):
 
     def draw(self):
         """Отрисовывает змейку на экране, затирая след."""
-        # Затирание последнего сегмента:
         if self.last:
             self.draw_cell(self.last, BOARD_BACKGROUND_COLOR)
-
-        # Отрисовка головы:
         self.draw_cell(self.positions[0], self.body_color)
-
-        # Отрисовка тела (всех, кроме головы):
         for position in self.positions[1:]:
             self.draw_cell(position, self.body_color)
 
@@ -177,7 +169,6 @@ def handle_keys(game_object):
 
 def main():
     """Основной игровой цикл."""
-    # Инициализация PyGame:
     pygame.init()
 
     snake = Snake()
@@ -190,12 +181,10 @@ def main():
         snake.update_direction()
         snake.move()
 
-        # Проверка поедания яблока:
         if snake.get_head_position() == apple.position:
             snake.length += 1
             apple.randomize_position(occupied=snake.positions)
 
-        # Проверка самоукуса (только для змейки длиной больше 1):
         head = snake.get_head_position()
         if snake.length > 1 and head in snake.positions[1:]:
             snake.reset()
